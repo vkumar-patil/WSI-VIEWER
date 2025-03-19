@@ -1,18 +1,32 @@
-import React from "react";
+const HubView = ({ viewport }) => {
+  const hubWidth = 200; // Small HubView width
+  const hubHeight = 150; // Small HubView height
+  const scaleFactor = 10; // Adjust based on image size
 
-const HubView = () => {
   return (
-    <div style={{ width: "200px", height: "150px", border: "2px solid red" }}>
-      <img src="/7_20241209_024613.png" alt="WSI Preview" width="100%" />
+    <div
+      style={{
+        width: `${hubWidth}px`,
+        height: `${hubHeight}px`,
+        border: "2px solid red",
+        position: "relative",
+      }}
+    >
+      <img
+        src="/7_20241209_024613.png"
+        alt="WSI Preview"
+        width="100%"
+        height="100%"
+      />
       <div
         style={{
           position: "absolute",
-          width: "20px",
-          height: "20px",
-          background: "red",
-          opacity: 0.5,
-          top: "50px", // Change dynamically based on zoom
-          left: "80px",
+          width: `${viewport.width / scaleFactor}px`,
+          height: `${viewport.height / scaleFactor}px`,
+          border: "2px solid blue",
+          background: "rgba(0, 0, 255, 0.2)",
+          top: `${viewport.y / scaleFactor}px`,
+          left: `${viewport.x / scaleFactor}px`,
         }}
       />
     </div>

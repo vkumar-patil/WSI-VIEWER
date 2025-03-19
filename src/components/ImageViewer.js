@@ -1,7 +1,8 @@
+// export default ImageViewer;
 import React, { useEffect, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
-const ImageViewer = () => {
+const ImageViewer = ({ onViewportChange }) => {
   const [detectionResults, setDetectionResults] = useState([]);
 
   useEffect(() => {
@@ -10,7 +11,6 @@ const ImageViewer = () => {
       .then((data) => {
         if (data.inference_results) {
           try {
-            // Convert single quotes to double quotes for valid JSON
             setDetectionResults(
               data.inference_results.output.detection_results
             );
@@ -25,26 +25,47 @@ const ImageViewer = () => {
 
   return (
     <div style={{ position: "relative", width: "100%", height: "80vh" }}>
-      <TransformWrapper>
+      <TransformWrapper
+        onZoomStop={({ state }) => {
+          onViewportChange((prev) => ({
+            ...prev,
+            scale: state.scale,
+          }));
+        }}
+        onPanningStop={({ state }) => {
+          onViewportChange((prev) => ({
+            ...prev,
+            x: -state.positionX,
+            y: -state.positionY,
+          }));
+        }}
+      >
         <TransformComponent>
-          <img src="/7_20241209_024613.png" alt="WSI" width="100%" />
-          {detectionResults.map((box, index) => {
-            const [x1, y1, x2, y2] = box; // Extract values
-            return (
-              <div
-                key={index}
-                style={{
-                  position: "absolute",
-                  left: `${x1}px`,
-                  top: `${y1}px`,
-                  width: `${x2 - x1}px`, // Calculate width
-                  height: `${y2 - y1}px`, // Calculate height
-                  border: "2px solid red",
-                  background: "rgba(255,0,0,0.3)",
-                }}
-              />
-            );
-          })}
+          <div style={{ position: "relative" }}>
+            <img
+              src="/7_20241209_024613.png"
+              alt="WSI"
+              width="100%"
+              height="100%"
+            />
+            {detectionResults.map((box, index) => {
+              const [x1, y1, x2, y2] = box;
+              return (
+                <div
+                  key={index}
+                  style={{
+                    position: "absolute",
+                    left: `${x1}px`,
+                    top: `${y1}px`,
+                    width: `${x2 - x1}px`,
+                    height: `${y2 - y1}px`,
+                    border: "2px solid red",
+                    background: "rgba(255,0,0,0.3)",
+                  }}
+                />
+              );
+            })}
+          </div>
         </TransformComponent>
       </TransformWrapper>
     </div>
